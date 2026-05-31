@@ -1,0 +1,12 @@
+include LICENSE
+include README.md
+
+recursive-include bteng_ros2 *.py py.typed
+
+exclude CLAUDE.md
+exclude claude_terminal.txt
+recursive-exclude memory *
+recursive-exclude test *
+recursive-exclude examples *
+recursive-exclude docs *
+recursive-exclude .github *

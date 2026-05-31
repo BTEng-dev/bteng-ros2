@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bteng-ros2"
+version = "0.1.2"
+description = "ROS 2 base classes for the BTEng behavior tree engine"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["bteng>=0.2.0"]
+authors = [
+  { name = "BTEng contributors", email = "mdirzpr@gmail.com" }
+]
+keywords = ["behavior-tree", "robotics", "ros2", "automation"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage      = "https://github.com/mdirzpr/BTEng_ros2"
+Documentation = "https://github.com/mdirzpr/BTEng_ros2/tree/main/docs"
+"Bug Tracker" = "https://github.com/mdirzpr/BTEng_ros2/issues"
+
+[project.optional-dependencies]
+dev = ["build", "pytest", "twine"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bteng_ros2*"]
+exclude = ["test*"]
+
+[tool.setuptools.package-data]
+bteng_ros2 = ["py.typed"]
