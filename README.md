@@ -4,6 +4,10 @@
 
 # bteng-ros2
 
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.3-blue)](pyproject.toml)
+
 ROS 2 base classes for the [BTEng](https://pypi.org/project/bteng/) behavior tree engine.
 
 A pure Python pip library. No ROS 2 workspace or colcon required.
