@@ -355,6 +355,26 @@ No ROS 2 install is needed — `test/conftest.py` mocks rclpy.
 
 ---
 
+## Completed (2026-07-28) — v0.2.3
+
+- **A node's ROS endpoint is an input port now**, so a tree can retarget it:
+  `<Navigate action_name="/robot1/navigate_to_pose"/>`, `service_name`,
+  `topic_name`.  Downstream this was a hard wall — bteng_nav2 ships 38 nodes and
+  exactly one had grown the port by hand, so a second planner, a second
+  controller server or a per-robot namespace could not be written in XML at all.
+- **Why `__init_subclass__` and not a port on the base class**: `provided_ports()`
+  is *replaced* by a subclass, not extended, and nearly every real node defines
+  its own.  Declaring the port on the base would have been silently dropped;
+  making each subclass call `super().provided_ports()` would mean editing all of
+  them and would break any that forgot.  So the base wraps whatever the subclass
+  declared (`bteng_ros2/_endpoint.py`), appending the port only if it is absent —
+  `ManageLifecycleNodes`, which declares its own, keeps it.
+- The default is the class attribute, so a tree that says nothing behaves exactly
+  as before; `resolve_endpoint()` re-reads at activation, so a second activation
+  picks up a changed value.  12 new tests in `test/test_endpoint_ports.py`.
+
+---
+
 ## Completed (2026-07-28) — v0.2.2
 
 - **`run()` now drains cancellations after a halt.**  `halt()` reaches every

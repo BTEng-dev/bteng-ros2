@@ -6,6 +6,7 @@ import time
 
 from bteng import StatefulActionNode, NodeStatus
 from bteng_ros2._action_client import RosActionClientMixin
+from bteng_ros2._endpoint import declare_endpoint_port, resolve_endpoint
 
 
 class RosActionNode(RosActionClientMixin, StatefulActionNode):
@@ -53,6 +54,13 @@ class RosActionNode(RosActionClientMixin, StatefulActionNode):
 
     action_type = None
     action_name: str = ""
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        # Give every subclass an `action_name` input port without it having to
+        # ask, so a tree can retarget the node: <Navigate action_name="/r1/nav"/>
+        super().__init_subclass__(**kwargs)
+        declare_endpoint_port(cls, "action_name")
+
     #: Seconds to wait for the action server to appear before reporting
     #: FAILURE. 0 requires the server to be ready on the very first tick.
     discovery_timeout: float = 5.0
@@ -78,6 +86,7 @@ class RosActionNode(RosActionClientMixin, StatefulActionNode):
         """
         if self.action_type is None:
             raise RuntimeError(f"{type(self).__name__}.action_type is not set")
+        resolve_endpoint(self, "action_name")
         if not self.action_name:
             raise RuntimeError(f"{type(self).__name__}.action_name is not set")
         self._init_action_client(self.action_type, self.action_name)

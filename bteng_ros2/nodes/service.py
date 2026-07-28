@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 
 from bteng import StatefulActionNode, NodeStatus
+from bteng_ros2._endpoint import declare_endpoint_port, resolve_endpoint
 from bteng_ros2._service_client import RosServiceClientMixin
 
 
@@ -47,6 +48,11 @@ class RosServiceNode(RosServiceClientMixin, StatefulActionNode):
 
     service_type = None
     service_name: str = ""
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        # See RosActionNode: the endpoint becomes settable from a tree.
+        super().__init_subclass__(**kwargs)
+        declare_endpoint_port(cls, "service_name")
     #: Seconds to wait for the service server to appear before reporting
     #: FAILURE. 0 requires the server to be ready on the very first tick.
     discovery_timeout: float = 5.0
@@ -61,6 +67,7 @@ class RosServiceNode(RosServiceClientMixin, StatefulActionNode):
     def on_start(self) -> NodeStatus:
         if self.service_type is None:
             raise RuntimeError(f"{type(self).__name__}.service_type is not set")
+        resolve_endpoint(self, "service_name")
         if not self.service_name:
             raise RuntimeError(f"{type(self).__name__}.service_name is not set")
         self._init_service_client(self.service_type, self.service_name)

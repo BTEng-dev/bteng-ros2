@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from bteng import ConditionNode, NodeStatus
+from bteng_ros2._endpoint import declare_endpoint_port, resolve_endpoint
 from bteng_ros2._topic import RosTopicMixin
 
 
@@ -65,6 +66,12 @@ class RosConditionNode(RosTopicMixin, ConditionNode):
     topic_name: str = ""
     topic_qos = 10
 
+    def __init_subclass__(cls, **kwargs) -> None:
+        # See RosActionNode: the endpoint becomes settable from a tree, so a
+        # condition can be pointed at a second sensor without a subclass.
+        super().__init_subclass__(**kwargs)
+        declare_endpoint_port(cls, "topic_name")
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self._latest_msg = None
@@ -74,6 +81,7 @@ class RosConditionNode(RosTopicMixin, ConditionNode):
         if self._subscription is None:
             if self.topic_type is None:
                 raise RuntimeError(f"{type(self).__name__}.topic_type is not set")
+            resolve_endpoint(self, "topic_name")
             if not self.topic_name:
                 raise RuntimeError(f"{type(self).__name__}.topic_name is not set")
             self._subscription = self.create_subscription(

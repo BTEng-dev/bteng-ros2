@@ -6,7 +6,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.2-blue)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-0.2.3-blue)](pyproject.toml)
 [![bteng](https://img.shields.io/badge/bteng-%3E%3D0.3.1-blue)](https://pypi.org/project/bteng/)
 
 ROS 2 base classes for the [BTEng](https://pypi.org/project/bteng/) behavior tree engine.
