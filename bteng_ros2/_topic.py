@@ -54,6 +54,3 @@ class RosTopicMixin(RosNodeMixin):
     def create_subscription(self, msg_type, topic: str, callback, qos=10):
         """Create a subscription. qos accepts an integer depth or a QoSProfile."""
         return self._require_ros_node().create_subscription(msg_type, topic, callback, qos)
-
-    def ros_logger(self):
-        return self._require_ros_node().get_logger()

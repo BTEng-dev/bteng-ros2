@@ -81,14 +81,13 @@ def main():
     rclpy.init()
     tree = build_tree()
     bt = RosBTExecutor(tree, ExecutorConfig(tick_interval=0.05))
-    try:
-        rclpy.spin(bt)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        bt.halt()
-        bt.destroy_node()
-        rclpy.shutdown()
+    # run(), not rclpy.spin(): one tree, then exit with its status. spin() would
+    # hang after the root settles (the tick timer has cancelled itself by then);
+    # run() also halts the tree on timeout, so on_halted() still cancels the goal.
+    status = bt.run(timeout=120.0)
+    bt.get_logger().info(f"Stateful navigation finished: {status.value}")
+    bt.destroy_node()
+    rclpy.shutdown()
 
 
 if __name__ == "__main__":

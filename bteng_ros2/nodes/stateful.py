@@ -29,6 +29,7 @@ class RosStatefulActionNode(RosActionClientMixin, RosServiceClientMixin, RosTopi
                 self._pub = self.create_publisher(String, "/status", 10)
                 self._init_action_client(NavigateToPose, "/navigate_to_pose")
                 self.send_goal(self._build_goal())
+                return self.action_status()   # tick() returns this — never None
 
             def on_running(self):
                 self._pub.publish(String(data="navigating"))

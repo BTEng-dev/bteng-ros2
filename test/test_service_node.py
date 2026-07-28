@@ -50,12 +50,31 @@ def test_on_start_returns_running_when_service_ready():
     assert result == NodeStatus.RUNNING
 
 
-def test_on_start_returns_failure_when_not_ready():
-    """on_start() returns FAILURE immediately when the service is not yet available."""
+def test_on_start_returns_running_while_the_service_is_undiscovered():
+    """on_start() waits instead of failing: DDS discovery has not finished yet.
+
+    This used to be FAILURE, which made every service node in a freshly built
+    tree fail on its first tick against a real ROS graph.
+    """
     fake = _NotReadyFakeRosNode()
     n = _SimpleServiceNode("n", ros_node=fake)
-    result = n.on_start()
-    assert result == NodeStatus.FAILURE
+    assert n.on_start() == NodeStatus.RUNNING
+    assert "/srv" in n.feedback_message
+    # Nothing was sent — call_service() bumps the generation counter and never ran.
+    assert n._svc_generation == 0
+
+
+def test_discovery_timeout_zero_keeps_the_old_fail_fast_behaviour():
+    class _FailFast(_SimpleServiceNode):
+        discovery_timeout = 0.0
+
+    n = _FailFast("n", ros_node=_NotReadyFakeRosNode())
+    assert n.on_start() == NodeStatus.FAILURE
+    assert "/srv" in n.feedback_message
+
+
+def test_discovery_timeout_defaults_to_five_seconds():
+    assert RosServiceNode.discovery_timeout == 5.0
 
 
 def test_on_running_returns_success_and_calls_on_response():

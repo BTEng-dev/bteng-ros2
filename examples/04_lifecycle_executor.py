@@ -52,11 +52,13 @@ class GoToGoal(RosActionNode):
     def make_goal(self):
         return _NavigateToPose.Goal()
 
+    # ros_logger() lives on RosTopicMixin, which RosActionNode does not include —
+    # reach the injected node directly instead.
     def on_success(self):
-        self.ros_logger().info("Navigation complete.")
+        self._require_ros_node().get_logger().info("Navigation complete.")
 
     def on_failure(self):
-        self.ros_logger().warn("Navigation failed.")
+        self._require_ros_node().get_logger().warn("Navigation failed.")
 
 
 # ── Lifecycle executor ────────────────────────────────────────────────────────

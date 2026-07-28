@@ -27,6 +27,16 @@ class RosNodeMixin:
     def set_ros_node(self, node) -> None:
         self._ros_node = node
 
+    def ros_logger(self):
+        """The underlying node's logger.
+
+        Lives here rather than on RosTopicMixin so every ROS-aware node has
+        it -- RosActionNode and RosServiceNode do not inherit that mixin,
+        so `self.ros_logger()` used to raise AttributeError in exactly the
+        callbacks (on_success/on_failure/on_response) where you reach for it.
+        """
+        return self._require_ros_node().get_logger()
+
     def _require_ros_node(self):
         if self._ros_node is None:
             raise RuntimeError(

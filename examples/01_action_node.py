@@ -63,14 +63,13 @@ def main():
     rclpy.init()
     tree = build_tree()
     bt = RosBTExecutor(tree, ExecutorConfig(tick_interval=0.1))
-    try:
-        rclpy.spin(bt)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        bt.halt()
-        bt.destroy_node()
-        rclpy.shutdown()
+    # run(), not rclpy.spin(): this process executes one tree and exits with its
+    # result. The tick timer cancels itself once the root settles, so a spin
+    # would just sit there forever — that shape only fits a long-lived node.
+    status = bt.run(timeout=60.0)
+    bt.get_logger().info(f"Tree finished: {status.value}")
+    bt.destroy_node()
+    rclpy.shutdown()
 
 
 if __name__ == "__main__":

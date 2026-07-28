@@ -6,7 +6,8 @@
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.1.3-blue)](pyproject.toml)
+[![Version](https://img.shields.io/badge/version-0.2.1-blue)](pyproject.toml)
+[![bteng](https://img.shields.io/badge/bteng-%3E%3D0.3.1-blue)](https://pypi.org/project/bteng/)
 
 ROS 2 base classes for the [BTEng](https://pypi.org/project/bteng/) behavior tree engine.
 
@@ -19,7 +20,29 @@ source /opt/ros/humble/setup.bash   # or iron / jazzy
 pip install bteng-ros2
 ```
 
-`bteng` is pulled in automatically.
+`bteng` is pulled in automatically. **`bteng>=0.3.1` is required** — this
+package's nodes rely on fixes landed in that release (`execute_tick()` rejecting
+a non-`NodeStatus` result, `ParallelNode` validating without an explicit
+`success_threshold`, reactive guards re-ticking). Older cores are not supported.
+
+### Importing without ROS 2
+
+`import bteng_ros2` succeeds on a machine with **no rclpy installed**, so a CLI
+can serve `--help` / `--dry-run` and a test suite can run off-robot:
+
+| Without rclpy | Works? |
+|---|---|
+| `import bteng_ros2`, `bteng_ros2.__version__` | yes |
+| Defining node classes: `RosActionNode`, `RosServiceNode`, `RosConditionNode`, `RosStatefulActionNode`, the four mixins | yes |
+| Constructing and ticking them against `FakeRosNode` | yes |
+| Building and validating a `Tree` of them | yes |
+| Subclassing `RosBTExecutor` / `LifecycleBTExecutor` | yes |
+| **Constructing** `RosBTExecutor` / `LifecycleBTExecutor` | **no** — raises `ImportError` naming the missing rclpy symbol |
+| Any call that reaches real ROS traffic (`create_publisher` on a real node, `_init_action_client`, …) | no |
+
+The two executors are real rclpy nodes, so they cannot work without ROS; they
+fail loudly at construction rather than half-working. Check
+`bteng_ros2.executor.RCLPY_AVAILABLE` if your program needs to branch.
 
 ## Design
 
@@ -119,10 +142,16 @@ tree  = Tree(TreeMetadata(id="robot"), root)
 bt = RosBTExecutor(tree, ExecutorConfig(tick_interval=0.05))
 # ↑ injects itself into nav and check automatically
 
-rclpy.spin(bt)
-bt.halt()
+status = bt.run(timeout=60.0)   # spins until the tree settles, then returns
+bt.destroy_node()
 rclpy.shutdown()
 ```
+
+`run()` is the one-tree-then-exit form: it spins, returns the root's final
+`NodeStatus`, and on timeout halts the tree and returns `FAILURE`. For a
+long-lived node that keeps serving after the tree finishes, use `rclpy.spin(bt)`
+instead. Pass `ros_node=` to have the tree share an rclpy node you already own
+rather than the executor itself.
 
 ### Lifecycle variant
 
@@ -149,7 +178,15 @@ node = Navigate("nav", ros_node=fake)
 
 # Inject a fake message into a subscription
 fake.subscriptions["/scan"].inject(LaserScan(ranges=[1.0, 2.0]))
+
+# Service clients: control readiness and when the response lands
+fake = FakeRosNode(service_deferred=True)      # responses wait for resolve()
+node = SetParam("svc", ros_node=fake)
+node.on_start()                                 # RUNNING — call in flight
+fake.service_clients["/set_param"].resolve(response)
 ```
+
+See [docs/testing.md](docs/testing.md).
 
 ## License
 

@@ -3,13 +3,17 @@
 ## Requirements
 
 - Python 3.10+
-- ROS 2 Humble, Iron, or Jazzy (sourced in your shell)
-- `bteng` >= 0.2.7
+- `bteng` >= 0.3.1 — older cores are not supported
+- ROS 2 Humble, Iron, or Jazzy (sourced in your shell) — needed to *run* a tree,
+  not to import the package. `import bteng_ros2`, defining nodes and
+  unit-testing them against `FakeRosNode` all work with no rclpy installed;
+  only `RosBTExecutor` / `LifecycleBTExecutor` construction requires ROS. See
+  [Testing](testing.md#what-works-with-no-rclpy-at-all).
 
 ## Installation
 
 ```bash
-pip install bteng bteng-ros2
+pip install "bteng>=0.3.1" bteng-ros2
 ```
 
 Or, for development (from the repo root):

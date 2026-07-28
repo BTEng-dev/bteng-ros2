@@ -105,9 +105,20 @@ class RosServiceClientMixin(RosNodeMixin):
             return self._svc_response
 
     def service_is_ready(self) -> bool:
+        """True when the service server has been discovered — non-blocking.
+
+        Safe to poll every tick: DDS discovery of an already-running server
+        takes tens to hundreds of milliseconds after create_client(), so a
+        first-tick "no" says nothing about whether the server exists.
+        """
         # Fix 6: guard against missing init
         if getattr(self, "_svc_client", None) is None:
             raise RuntimeError(
                 f"{type(self).__name__}: call _init_service_client() before service_is_ready()"
             )
-        return self._svc_client.service_is_ready()
+        # A test double without service_is_ready() counts as ready — the
+        # counterpart of RosActionClientMixin.action_server_ready().
+        probe = getattr(self._svc_client, "service_is_ready", None)
+        if not callable(probe):
+            return True
+        return bool(probe())

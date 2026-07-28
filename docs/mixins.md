@@ -18,9 +18,12 @@ from bteng_ros2 import RosNodeMixin
 | Method | Description |
 |---|---|
 | `set_ros_node(node)` | Inject or replace the underlying rclpy node |
+| `ros_logger()` | The underlying node's logger |
 | `_require_ros_node()` | Returns the ros node or raises `RuntimeError` if not set |
 
-You rarely use this directly — it is the base of all other mixins.
+You rarely use this directly — it is the base of all other mixins, so
+`ros_logger()` is available on every ROS-aware node: `RosActionNode`,
+`RosServiceNode`, `RosConditionNode` and `RosStatefulActionNode` alike.
 
 ---
 
@@ -124,7 +127,6 @@ from bteng_ros2 import RosTopicMixin
 |---|---|
 | `create_publisher(msg_type, topic, qos=10)` | Returns an `rclpy` publisher. |
 | `create_subscription(msg_type, topic, callback, qos=10)` | Returns an `rclpy` subscription. |
-| `ros_logger()` | Returns the underlying node's logger. |
 
 ### Example
 

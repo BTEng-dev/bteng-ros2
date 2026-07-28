@@ -38,8 +38,15 @@ Two executor classes drive the tree from a ROS 2 timer:
 ## Quick start
 
 ```bash
-pip install bteng bteng-ros2
+pip install "bteng>=0.3.1" bteng-ros2
 ```
+
+`bteng>=0.3.1` is required; older cores are not supported.
+
+`import bteng_ros2` itself needs **no rclpy** — nodes, mixins and trees can be
+built and unit-tested off-robot, so a CLI can serve `--help` / `--dry-run`
+without ROS. Only constructing `RosBTExecutor` / `LifecycleBTExecutor` needs a
+real ROS 2 environment. See [Testing](testing.md#what-works-with-no-rclpy-at-all).
 
 ```python
 from bteng import SequenceNode, Tree, TreeMetadata, ExecutorConfig

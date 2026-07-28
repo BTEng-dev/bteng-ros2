@@ -6,6 +6,42 @@ pattern mocks `rclpy` at import time so tests run with plain `pytest`.
 
 ---
 
+## What works with no rclpy at all
+
+`import bteng_ros2` does **not** require rclpy. The package imports, and every
+class it exports is defined and subclassable, on a machine that has never seen
+ROS 2. Concretely, with rclpy absent and unimportable:
+
+**Works**
+
+- `import bteng_ros2`, `bteng_ros2.__version__`, everything in `__all__`
+- Defining and instantiating `RosActionNode`, `RosStatefulActionNode`,
+  `RosConditionNode`, `RosServiceNode`, and the four mixins
+- Ticking those nodes against a `FakeRosNode` — publish, subscribe, inject,
+  service calls, timers
+- Building and validating a `Tree` of them and driving it with a plain
+  `bteng.TreeExecutor`
+- Subclassing `RosBTExecutor` / `LifecycleBTExecutor` (the `class` statement
+  itself)
+
+**Does not work**
+
+- **Constructing** `RosBTExecutor` or `LifecycleBTExecutor`. They *are* rclpy
+  nodes (`rclpy.node.Node` / `rclpy.lifecycle.LifecycleNode`), so there is
+  nothing to fall back to. Construction raises `ImportError` naming the missing
+  symbol and telling you to source a ROS 2 environment — it never half-works.
+- Anything that reaches real ROS traffic: `_init_action_client()`,
+  `_init_service_client()` against a real node, real QoS profiles.
+
+Branch on `bteng_ros2.executor.RCLPY_AVAILABLE` if your program needs to know.
+
+This is why a CLI built on bteng-ros2 can honestly advertise a ROS-free
+`--help` and `--dry-run`. Mocking rclpy in `conftest.py` (below) is still what
+you want when the test needs the *executors* — the mock supplies the base
+classes the real ones would.
+
+---
+
 ## Setup: mock rclpy in conftest.py
 
 Create `test/conftest.py` in your project:
@@ -75,12 +111,91 @@ assert received == [laser_scan_msg]
 
 ### Service clients
 
+Immediate mode is the default and is unchanged: the future fires its
+done-callback the moment one is added, so the response is already there when
+`call_service()` returns.
+
 ```python
 client = fake.create_client(object, "/set_param")
 client.set_response("ok")
 future = client.call_async("req")
 # resolves immediately — callback already fired
 ```
+
+#### Deferred mode — decide when the response lands
+
+Immediate mode means a test can only install a response *after* the first tick,
+and it cannot model a service that takes several ticks. Set `deferred` and the
+future waits for `resolve()`, mirroring `SlowActionClient` /
+`DeferredFuture` for actions.
+
+```python
+class SetParam(RosServiceClientMixin, StatefulActionNode):
+    def on_start(self):
+        self._init_service_client(object, "/set_param")
+        self.call_service("req")
+        return self.service_status()
+
+    def on_running(self):
+        return self.service_status()
+
+def test_running_then_success():
+    # Nodes create their own clients inside on_start(), so seed the default
+    # on the node rather than reaching for the client afterwards.
+    fake = FakeRosNode(service_deferred=True)
+    n = SetParam("svc", ros_node=fake)
+
+    assert n.on_start() == NodeStatus.RUNNING
+
+    client = fake.service_clients["/set_param"]
+    assert n.on_running() == NodeStatus.RUNNING   # tick 2, still in flight
+    assert n.on_running() == NodeStatus.RUNNING   # tick 3, still in flight
+
+    client.resolve("ok")                          # response lands now
+    assert n.on_running() == NodeStatus.SUCCESS
+    assert n.service_response == "ok"
+```
+
+`resolve(response)` overrides anything `set_response()` pre-loaded, so a test
+that only decides the answer once the call is in flight need not pre-load.
+`resolve(None)` is a real `None` response (`service_status()` reads it as
+`FAILURE`), not "no argument". Calling `resolve()` with nothing outstanding
+raises `AssertionError` rather than passing silently.
+
+An already-created client can be switched at any time:
+
+```python
+client.deferred = True          # or client.set_deferred()
+```
+
+#### Readiness — model a server that is not discovered yet
+
+`service_is_ready()` reports the settable `ready` attribute (default `True`)
+and counts every poll in `ready_polls`, so a discovery test can assert that
+polling actually happened instead of inferring it.
+
+```python
+# Every client this node creates starts undiscovered.
+fake = FakeRosNode(service_ready=False)
+client = fake.create_client(object, "/set_param")
+
+assert client.service_is_ready() is False
+assert client.service_is_ready() is False    # node keeps polling across ticks
+
+client.ready = True                          # or client.set_ready()
+assert client.service_is_ready() is True
+assert client.ready_polls == 3               # all three polls counted
+```
+
+Seeding the flag on `FakeRosNode` rather than on the client matters: nodes call
+`create_client()` from inside `on_start()`, so a client that must be
+undiscovered on its very first poll cannot be configured after the fact.
+`create_client(..., ready=..., deferred=...)` overrides the node-level default
+for a single client.
+
+Every request passed to `call_async()` is recorded in `client.requests`, oldest
+first — that is how you assert a node did *not* send while the server was still
+undiscovered.
 
 ---
 

@@ -65,14 +65,13 @@ def main():
     rclpy.init()
     tree = build_tree()
     bt = RosBTExecutor(tree, ExecutorConfig(tick_interval=0.05))
-    try:
-        rclpy.spin(bt)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        bt.halt()
-        bt.destroy_node()
-        rclpy.shutdown()
+    # run(), not rclpy.spin(): one guarded navigation, then exit with its result.
+    # spin() never returns — the tick timer cancels itself when the root settles
+    # and the spin keeps going, which is only what a long-lived node wants.
+    status = bt.run(timeout=30.0)
+    bt.get_logger().info(f"Guarded navigation finished: {status.value}")
+    bt.destroy_node()
+    rclpy.shutdown()
 
 
 if __name__ == "__main__":
