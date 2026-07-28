@@ -116,6 +116,10 @@ class RosBTExecutor(Node):
     setup and teardown stay with the caller.
     """
 
+    #: Seconds to keep spinning after a halt so queued goal cancellations are
+    #: actually transmitted. 0 disables the drain.
+    cancel_grace: float = 0.5
+
     def __init__(
         self,
         tree: Tree,
@@ -159,6 +163,9 @@ class RosBTExecutor(Node):
 
         Only one run() may spin these nodes at a time; a concurrent call raises
         rather than letting rclpy reject the second registration deep inside.
+
+        After a halt or a timeout the spin continues for cancel_grace seconds so
+        queued cancellations actually leave the process -- see _drain_cancels().
         """
         # Imported here, not at module scope, so importing this module stays
         # possible under the mocked rclpy used by the test suites downstream.
@@ -189,12 +196,14 @@ class RosBTExecutor(Node):
                     # Somebody cancelled us — the tree is already halted, so no
                     # tick will ever settle it and spinning on would just burn
                     # the whole timeout.
+                    self._drain_cancels(spin)
                     self.get_logger().info("BT run halted")
                     return NodeStatus.FAILURE
                 if not rclpy.ok():
                     break
                 if deadline is not None and time.monotonic() >= deadline:
                     self.halt()
+                    self._drain_cancels(spin)
                     self.get_logger().error(f"BT run timed out after {timeout}s")
                     return NodeStatus.FAILURE
                 spin.spin_once(timeout_sec=slice_sec)
@@ -209,6 +218,24 @@ class RosBTExecutor(Node):
                 spin.shutdown()
 
         return self._final_status if self._final_status is not None else NodeStatus.FAILURE
+
+    def _drain_cancels(self, spin) -> None:
+        """Spin briefly after a halt so queued cancellations are transmitted.
+
+        halt() reaches every RUNNING node's on_halted(), and for an action node
+        that means cancel_goal_async() -- which only *queues* the request. Return
+        the moment the halt flag is seen and nothing ever spins to send it: the
+        tree stops ticking while the robot keeps executing the goal. Draining is
+        bounded so a halt still returns promptly.
+        """
+        if self.cancel_grace <= 0:
+            return
+        end = time.monotonic() + self.cancel_grace
+        while time.monotonic() < end:
+            if not rclpy.ok():
+                return
+            with contextlib.suppress(Exception):
+                spin.spin_once(timeout_sec=0.01)
 
     def _is_tickable(self) -> bool:
         """False once the tree settled or was halted — the tick timer is

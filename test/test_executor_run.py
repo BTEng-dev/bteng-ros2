@@ -4,6 +4,7 @@ Both APIs are what the docstring and every downstream example advertise, so
 they are covered here directly rather than through a node-level test.
 """
 
+import threading
 import time
 
 import rclpy
@@ -257,3 +258,65 @@ def test_spinning_flag_is_cleared_so_a_later_run_is_allowed():
     bt = _executor(_SucceedAfter("a"))
     bt.run(timeout=5.0)
     assert bt._spinning is False
+
+
+# ── cancel drain ────────────────────────────────────────────────────────────────
+
+class _CancelsOnHalt(ActionNode):
+    """Stands in for an action node: halting queues a cancellation that only
+    leaves the process if something keeps spinning."""
+
+    def __init__(self, name, **kw):
+        super().__init__(name, **kw)
+        self.cancel_queued = False
+        self.spins_after_cancel = 0
+
+    def tick(self):
+        return NodeStatus.RUNNING
+
+    def halt(self):
+        self.cancel_queued = True
+        super().halt()
+
+
+def test_halt_keeps_spinning_so_a_queued_cancel_is_transmitted(monkeypatch):
+    """Without the drain, run() returned the instant it saw the halt flag and the
+    cancel_goal_async() queued by on_halted() was never sent — the tree stopped
+    ticking while the robot kept driving."""
+    node = _CancelsOnHalt("a")
+    bt = _executor(node)
+    bt.cancel_grace = 0.1
+
+    spins = []
+    real_spin = SingleThreadedExecutor.spin_once
+
+    def counting_spin(self, timeout_sec=None):
+        if node.cancel_queued:
+            spins.append(1)
+        return real_spin(self, timeout_sec=timeout_sec)
+
+    monkeypatch.setattr(SingleThreadedExecutor, "spin_once", counting_spin)
+    threading.Timer(0.05, bt.halt).start()
+
+    assert bt.run(timeout=5.0) == NodeStatus.FAILURE
+    assert node.cancel_queued
+    assert spins, "run() returned without spinning once after the halt"
+
+
+def test_cancel_grace_zero_returns_immediately():
+    bt = _executor(_Forever("a"))
+    bt.cancel_grace = 0.0
+    bt.halt()
+    t0 = time.monotonic()
+    assert bt.run(timeout=1.0) == NodeStatus.FAILURE
+    assert time.monotonic() - t0 < 0.5
+
+
+def test_timeout_also_drains_cancels():
+    node = _CancelsOnHalt("a")
+    bt = _executor(node)
+    bt.cancel_grace = 0.05
+    t0 = time.monotonic()
+    assert bt.run(timeout=0.1) == NodeStatus.FAILURE
+    assert node.cancel_queued
+    assert time.monotonic() - t0 >= 0.1

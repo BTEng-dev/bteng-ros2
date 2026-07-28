@@ -355,6 +355,19 @@ No ROS 2 install is needed — `test/conftest.py` mocks rclpy.
 
 ---
 
+## Completed (2026-07-28) — v0.2.2
+
+- **`run()` now drains cancellations after a halt.**  `halt()` reaches every
+  RUNNING node's `on_halted()`, and for an action node that is
+  `cancel_goal_async()` — which only *queues* the request.  `run()` returned the
+  instant it saw the halt flag, so nothing ever spun to send it: offline the tree
+  stops and everything looks right, but on a robot the tree stops ticking while
+  the goal keeps executing.  `cancel_grace` (0.5 s, 0 disables) keeps the spin
+  alive after both the halt and the timeout path.  Found by writing the live
+  layer of `bteng_nav2_test` — a class of bug no stub can catch.
+
+---
+
 ## Completed (2026-07-27) — v0.2.0
 
 - **`RosBTExecutor.run(timeout=None)`** and the **`ros_node=` constructor kwarg**,
