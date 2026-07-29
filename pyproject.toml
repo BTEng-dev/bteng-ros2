@@ -7,7 +7,7 @@ name = "bteng-ros2"
 version = "0.2.3"
 description = "ROS 2 base classes for the BTEng behavior tree engine"
 readme = "README.md"
-license = "Apache-2.0"
+license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["bteng>=0.3.1"]

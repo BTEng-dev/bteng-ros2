@@ -5,7 +5,7 @@
 # bteng-ros2
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.2.3-blue)](pyproject.toml)
 [![bteng](https://img.shields.io/badge/bteng-%3E%3D0.3.1-blue)](https://pypi.org/project/bteng/)
 
@@ -217,4 +217,4 @@ See [docs/testing.md](docs/testing.md).
 
 ## License
 
-Apache 2.0
+MIT
