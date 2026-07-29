@@ -14,9 +14,9 @@ behavior tree engine.
 |---|---|
 | Remote | `github.com/BTEng-dev/bteng-ros2` |
 | Branch | `main` (release branch; `gh-pages` holds the built docs) |
-| Version | `0.2.1` — single source of truth in `pyproject.toml` |
+| Version | `0.2.3` — single source of truth in `pyproject.toml` |
 | Requires | Python >= 3.10, `bteng>=0.3.1` (older cores unsupported) |
-| Tests | 164, all passing on bteng 0.3.1 |
+| Tests | 179, all passing on bteng 0.3.1 (2026-07-29) |
 
 A pure Python pip library. No ROS 2 workspace or colcon required. It ships
 **mixins and base classes**, not a standalone node — users subclass them inside

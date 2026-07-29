@@ -4,6 +4,13 @@ bteng-ros2 provides three pre-built base classes that cover the most common
 robot behavior patterns. All of them work the same way: subclass, declare a
 few class attributes, implement the required methods.
 
+Two behaviours come for free. The endpoint you declare is also an **input port**,
+so a tree can retarget the node without a subclass — `RosActionNode`,
+`RosServiceNode` and `RosConditionNode` subclasses all get one. And action and
+service nodes **wait for their server to appear** instead of failing on the
+first tick, because DDS discovery has not finished at the moment a client is
+created. Both are described at the bottom of this page.
+
 ---
 
 ## RosActionNode
@@ -191,3 +198,67 @@ def on_success(self):
 
 See the [BTEng documentation](https://github.com/mdirzpr/BTEng) for the full
 blackboard API.
+
+---
+
+## The endpoint is a port
+
+A node that pins its endpoint as a class attribute can only ever talk to that
+one endpoint. A second planner, a second sensor or a per-robot namespace then
+needs a subclass per target — and a package of 38 nodes needs 38 of them.
+
+So the endpoint becomes an input port whose default is the class attribute you
+declared:
+
+| Subclass of | Gets the port |
+|---|---|
+| `RosActionNode` | `action_name` |
+| `RosServiceNode` | `service_name` |
+| `RosConditionNode` | `topic_name` |
+| `RosStatefulActionNode` | none — three mixins, no single endpoint to name |
+
+The port is on **your subclass**, not on the base: `RosActionNode.provided_ports()`
+is still empty, and `class GoToWaypoint(RosActionNode)` reports
+`action_name` defaulting to `/navigate_to_pose`.
+
+```xml
+<GoToWaypoint name="to_dock" action_name="/robot2/navigate_to_pose" />
+<GoToWaypoint name="home"    action_name="{home_action}" />
+```
+
+Say nothing and the class attribute is used, exactly as before. The port is
+resolved at activation, so a blackboard-bound value can change between runs.
+
+The port is added by `__init_subclass__`, not declared on the base: a subclass
+that defines `provided_ports()` *replaces* the base's rather than extending it,
+and requiring every subclass to call `super().provided_ports()` would silently
+break the ones that forgot. The hook wraps whatever the subclass ended up with
+and appends the port unless the subclass declared it itself.
+
+`RosTopicMixin` is not covered — a publisher's `topic` stays a class attribute.
+
+---
+
+## Discovery
+
+A client created microseconds ago cannot reach anything yet: DDS discovery takes
+time, and `service_is_ready()` asked immediately answers no. A node that treats
+that as "no server" fails on its first tick against a graph that is perfectly
+healthy — which is what happened to every service node in bteng-nav2 before
+0.2.1.
+
+Each node therefore waits for its server to appear, reporting `RUNNING` while it
+waits, up to `discovery_timeout` (5.0 s by default):
+
+```python
+class SlowToStart(RosServiceNode):
+    discovery_timeout = 30.0     # a stack that comes up with the robot
+
+class MustBeThereNow(RosActionNode):
+    discovery_timeout = 0.0      # require the server on the very first tick
+```
+
+The wait is spread across ticks rather than blocking, so the rest of the tree
+keeps running. On timeout the node fails and names the endpoint it waited for —
+a name nothing serves and a stack that is not running look identical from inside
+the node, so the message has to carry the name.

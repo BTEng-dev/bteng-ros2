@@ -20,11 +20,22 @@ ROS 2 capabilities are exposed as **Python mixins**. Each mixin adds one concern
 
 Combine only what you need. Three pre-built classes cover the most common patterns:
 
-| Class | Base | Mixins included |
-|---|---|---|
-| `RosActionNode` | `StatefulActionNode` | `RosActionClientMixin` |
-| `RosConditionNode` | `ConditionNode` | `RosTopicMixin` |
-| `RosStatefulActionNode` | `StatefulActionNode` | All three mixins |
+| Class | Base | Mixins included | Endpoint port |
+|---|---|---|---|
+| `RosActionNode` | `StatefulActionNode` | `RosActionClientMixin` | `action_name` |
+| `RosServiceNode` | `StatefulActionNode` | `RosServiceClientMixin` | `service_name` |
+| `RosConditionNode` | `ConditionNode` | `RosTopicMixin` | `topic_name` |
+| `RosStatefulActionNode` | `StatefulActionNode` | All three mixins | — |
+
+The endpoint port appears on **your subclass**, not on the base itself, and its
+default is the class attribute you declared — so a tree can retarget a node (a
+second planner, a second sensor, a per-robot namespace) without another
+subclass, and behaves exactly as before when it says nothing.
+`RosStatefulActionNode` is the exception: it combines all three mixins with no
+single endpoint to name, so it gets no port. Action and service nodes also wait
+out DDS discovery (`discovery_timeout`, 5.0 s) instead of failing their first
+tick against a stack that is merely still coming up. Both are in
+[Node types](nodes.md).
 
 Two executor classes drive the tree from a ROS 2 timer:
 

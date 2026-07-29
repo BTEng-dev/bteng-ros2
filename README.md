@@ -44,6 +44,33 @@ The two executors are real rclpy nodes, so they cannot work without ROS; they
 fail loudly at construction rather than half-working. Check
 `bteng_ros2.executor.RCLPY_AVAILABLE` if your program needs to branch.
 
+### Retargetable endpoints
+
+A subclass of `RosActionNode`, `RosServiceNode` or `RosConditionNode` gets its
+endpoint as an input port whose default is the class attribute — `action_name`,
+`service_name`, `topic_name` respectively. A tree can point
+one node at a second server without a subclass, and `--namespace`-style rewrites
+have something to rewrite:
+
+```xml
+<GoToWaypoint name="robot2" action_name="/robot2/navigate_to_pose" />
+<GoToWaypoint name="dock"   action_name="{dock_action}" />
+```
+
+Say nothing and the class attribute is used. The port is appended by
+`__init_subclass__`, so subclasses that define their own `provided_ports()` — as
+most do — inherit it without calling `super()`. `RosTopicMixin` is not covered:
+a publisher's `topic` stays a class attribute.
+
+### Discovery
+
+DDS discovery has not finished at the moment a client is created, so a node that
+asks `service_is_ready()` immediately gets "no" from a healthy stack. Every
+action and service node waits for its server, reporting `RUNNING` meanwhile, up
+to `discovery_timeout` (5.0 s; set `0.0` to require it on the first tick). The
+wait is spread across ticks, not blocking, so the rest of the tree keeps
+running.
+
 ## Design
 
 `bteng-ros2` provides **mixins and base classes** — not a standalone node.
