@@ -1,0 +1,1382 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="ROS 2 base classes for the BTEng behavior tree engine">
+      
+      
+      
+        <link rel="canonical" href="https://bteng-dev.github.io/bteng-ros2/executors/">
+      
+      
+        <link rel="prev" href="../mixins/">
+      
+      
+        <link rel="next" href="../testing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../images/BTEng-ROS2.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Executors - bteng-ros2</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#executors" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="bteng-ros2" class="md-header__button md-logo" aria-label="bteng-ros2" data-md-component="logo">
+      
+  <img src="../images/BTEng-ROS2.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            bteng-ros2
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Executors
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/BTEng-dev/bteng-ros2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BTEng-dev/bteng-ros2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../nodes/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Nodes
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../mixins/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Mixins
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Executors
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="bteng-ros2" class="md-nav__button md-logo" aria-label="bteng-ros2" data-md-component="logo">
+      
+  <img src="../images/BTEng-ROS2.png" alt="logo">
+
+    </a>
+    bteng-ros2
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/BTEng-dev/bteng-ros2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    BTEng-dev/bteng-ros2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../nodes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nodes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mixins/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mixins
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executors
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rosbtexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RosBTExecutor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RosBTExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharing-one-rclpy-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharing one rclpy node
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred-ros_node-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred ros_node injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecyclebtexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LifecycleBTExecutor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LifecycleBTExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle transitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constructor_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abstract-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abstract method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-between-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing between them
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tick-rate-and-executorconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tick rate and ExecutorConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sim-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sim time
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rosbtexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RosBTExecutor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RosBTExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharing-one-rclpy-node" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sharing one rclpy node
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deferred-ros_node-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred ros_node injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecyclebtexecutor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LifecycleBTExecutor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LifecycleBTExecutor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle transitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constructor_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abstract-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abstract method
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methods_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#choosing-between-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing between them
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tick-rate-and-executorconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tick rate and ExecutorConfig
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sim-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sim time
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="executors">Executors<a class="headerlink" href="#executors" title="Permanent link">&para;</a></h1>
+<p>bteng-ros2 provides two executor classes that drive a BTEng tree from a ROS 2
+timer. Choose based on how much lifecycle control you need.</p>
+<div class="admonition note">
+<p class="admonition-title">These two classes are the only part of the package that needs rclpy</p>
+<p><code>import bteng_ros2</code> succeeds without a ROS 2 install, and so does defining
+or subclassing these executors. <strong>Constructing</strong> one does not: they <em>are</em>
+rclpy nodes (<code>rclpy.node.Node</code> / <code>rclpy.lifecycle.LifecycleNode</code>), so with
+no rclpy the constructor raises <code>ImportError</code> naming the missing symbol
+rather than half-working. Branch on <code>bteng_ros2.executor.RCLPY_AVAILABLE</code>
+if your program needs to know. See
+<a href="../testing/#what-works-with-no-rclpy-at-all">Testing</a>.</p>
+</div>
+<hr />
+<h2 id="rosbtexecutor">RosBTExecutor<a class="headerlink" href="#rosbtexecutor" title="Permanent link">&para;</a></h2>
+<p>A plain <code>rclpy.Node</code> that creates a timer and calls <code>TreeExecutor.tick_once()</code>
+on every tick. The timer cancels itself when the tree returns a terminal status.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng_ros2.executor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RosBTExecutor</span>
+</code></pre></div>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tree</span><span class="p">,</span> <span class="n">TreeMetadata</span><span class="p">,</span> <span class="n">ExecutorConfig</span><span class="p">,</span> <span class="n">SequenceNode</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng_ros2.executor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RosBTExecutor</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">tree</span> <span class="o">=</span> <span class="n">build_my_tree</span><span class="p">()</span>   <span class="c1"># nodes are constructed without ros_node</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">bt</span>   <span class="o">=</span> <span class="n">RosBTExecutor</span><span class="p">(</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="n">tree</span><span class="p">,</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">config</span><span class="o">=</span><span class="n">ExecutorConfig</span><span class="p">(</span><span class="n">tick_interval</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span>  <span class="c1"># 20 Hz</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">node_name</span><span class="o">=</span><span class="s2">&quot;bt_executor&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">)</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="n">status</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">60.0</span><span class="p">)</span>   <span class="c1"># spins until the tree settles</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="n">bt</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</code></pre></div>
+<p><code>rclpy.spin(bt)</code> also works, but it never returns on its own — the tick timer
+cancels itself when the tree settles and the spin keeps going. Use <code>run()</code> when
+the program's job is to execute one tree and exit with its result.</p>
+<h3 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">RosBTExecutor</span><span class="p">(</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">,</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">config</span><span class="p">:</span> <span class="n">ExecutorConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># defaults to ExecutorConfig()</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">node_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bt_executor&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">ros_node</span><span class="p">:</span> <span class="n">Node</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>          <span class="c1"># injection target; defaults to self</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run(timeout=None)</code></td>
+<td>Spin until the tree settles; returns its final <code>NodeStatus</code>. On timeout: halts the tree and returns <code>FAILURE</code>. Never calls <code>rclpy.init()</code>/<code>shutdown()</code>.</td>
+</tr>
+<tr>
+<td><code>set_tree(tree)</code></td>
+<td>Replace the tree at runtime. Re-injects <code>ros_node</code> into all nodes.</td>
+</tr>
+<tr>
+<td><code>halt()</code></td>
+<td>Cancel the tick timer and halt the BTEng tree.</td>
+</tr>
+<tr>
+<td><code>final_status</code></td>
+<td>Property — the status the tree settled at, or <code>None</code> if it has not settled.</td>
+</tr>
+<tr>
+<td><code>bt_executor</code></td>
+<td>Property — the underlying <code>TreeExecutor</code> instance.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="run">run()<a class="headerlink" href="#run" title="Permanent link">&para;</a></h3>
+<p>Ticking is driven by the timer created in the constructor; <code>run()</code> only spins a
+<code>SingleThreadedExecutor</code> so that timer and any client callbacks fire, and
+returns as soon as the root reports a terminal status.</p>
+<ul>
+<li><code>timeout=None</code> waits indefinitely. On expiry the tree is halted and <code>FAILURE</code>
+  is returned — the tree is not left half-running.</li>
+<li>An external <code>ros_node</code> (below) is added to the same spin. Without that, its
+  action and service responses would never be delivered and every node in the
+  tree would stay <code>RUNNING</code> forever.</li>
+<li>Calling <code>run()</code> again after the tree settled, or after <code>halt()</code>, returns the
+  recorded status immediately instead of hanging: the tick timer is cancelled,
+  so nothing could ever settle a second time.</li>
+<li><code>halt()</code> from another thread ends a spinning <code>run()</code> promptly and it returns
+  <code>FAILURE</code> — a supervisor can cancel a tree without waiting out the timeout:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">bt</span><span class="o">.</span><span class="n">halt</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>   <span class="c1"># cancel from anywhere</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">status</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">300.0</span><span class="p">)</span>          <span class="c1"># returns ~immediately on halt</span>
+</code></pre></div>
+<p>That is the cooperative shape to use: the canceller sets the halt, the thread
+  that owns the run reports the result. Do not tick or halt the same tree from
+  two threads at once.
+- A second <code>run()</code> while one is still spinning raises <code>RuntimeError</code> — rclpy
+  allows only one executor per node, so this fails loudly instead of letting the
+  second <code>add_node()</code> fail deep inside rclpy.
+- An exception raised by a node's <code>tick()</code> propagates out of <code>run()</code>; the spin is
+  still torn down and the nodes released, so the executor can be discarded
+  safely. Catch it if one bad tree must not kill the process.
+- A root result that is not a <code>NodeStatus</code> is logged and coerced to <code>FAILURE</code>
+  rather than formatted (which would raise inside a timer callback, where rclpy
+  swallows the traceback and the run hangs). On <code>bteng&gt;=0.3.1</code> this is
+  belt-and-braces: the core's <code>execute_tick()</code> now rejects a non-<code>NodeStatus</code> at
+  the offending node, so a real tree raises there first. The guard is kept for
+  stubbed executors and patched <code>tick_once()</code>. <code>LifecycleBTExecutor._tick()</code>
+  carries the identical guard.</p>
+<h3 id="sharing-one-rclpy-node">Sharing one rclpy node<a class="headerlink" href="#sharing-one-rclpy-node" title="Permanent link">&para;</a></h3>
+<p>By default the executor injects <strong>itself</strong> into the tree, so all ROS traffic is
+served by the <code>bt_executor</code> node. Pass <code>ros_node=</code> to inject a node you already
+own instead — useful when the same process holds parameters, TF listeners or
+publishers that the tree nodes should share:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">ros_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="s2">&quot;robot_bt&quot;</span><span class="p">,</span> <span class="n">parameter_overrides</span><span class="o">=</span><span class="p">[</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;use_sim_time&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">)])</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">bt</span> <span class="o">=</span> <span class="n">RosBTExecutor</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">node_name</span><span class="o">=</span><span class="s2">&quot;robot_bt_ticker&quot;</span><span class="p">,</span> <span class="n">ros_node</span><span class="o">=</span><span class="n">ros_node</span><span class="p">)</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">status</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">60.0</span><span class="p">)</span>      <span class="c1"># spins ros_node too</span>
+</code></pre></div>
+<p>Clocks follow the same target: <code>RosClock</code> is wired from whichever node was
+injected, so <code>use_sim_time</code> on <em>that</em> node is what <code>Timeout</code>/<code>RateController</code>
+decorators obey.</p>
+<h3 id="deferred-ros_node-injection">Deferred ros_node injection<a class="headerlink" href="#deferred-ros_node-injection" title="Permanent link">&para;</a></h3>
+<p>When <code>set_tree()</code> is called, the executor walks the entire tree and calls
+<code>set_ros_node(self)</code> on every node that has a <code>_ros_node</code> of <code>None</code>. This means
+you never pass <code>ros_node=</code> at node construction time — the executor injects
+itself automatically:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># No ros_node here</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">nav</span>  <span class="o">=</span> <span class="n">GoToWaypoint</span><span class="p">(</span><span class="s2">&quot;navigate&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">scan</span> <span class="o">=</span> <span class="n">PathIsClear</span><span class="p">(</span><span class="s2">&quot;scan&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">root</span> <span class="o">=</span> <span class="n">SequenceNode</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">scan</span><span class="p">,</span> <span class="n">nav</span><span class="p">])</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">tree</span> <span class="o">=</span> <span class="n">Tree</span><span class="p">(</span><span class="n">TreeMetadata</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;robot&quot;</span><span class="p">),</span> <span class="n">root</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Injection happens here</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">bt</span> <span class="o">=</span> <span class="n">RosBTExecutor</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<p>If a node was constructed with an explicit <code>ros_node=</code>, the executor respects
+that and does not overwrite it.</p>
+<hr />
+<h2 id="lifecyclebtexecutor">LifecycleBTExecutor<a class="headerlink" href="#lifecyclebtexecutor" title="Permanent link">&para;</a></h2>
+<p>A <code>rclpy.lifecycle.LifecycleNode</code> that separates tree construction from
+execution using standard ROS 2 lifecycle transitions.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng_ros2.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleBTExecutor</span>
+</code></pre></div>
+<h3 id="lifecycle-transitions">Lifecycle transitions<a class="headerlink" href="#lifecycle-transitions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Transition</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configure</code></td>
+<td>Calls <code>build_tree()</code> → injects ros_node → validates tree</td>
+</tr>
+<tr>
+<td><code>activate</code></td>
+<td>Creates the tick timer</td>
+</tr>
+<tr>
+<td><code>deactivate</code></td>
+<td>Cancels the timer, halts the tree</td>
+</tr>
+<tr>
+<td><code>cleanup</code></td>
+<td>Destroys the tree</td>
+</tr>
+</tbody>
+</table>
+<h3 id="usage_1">Usage<a class="headerlink" href="#usage_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tree</span><span class="p">,</span> <span class="n">TreeMetadata</span><span class="p">,</span> <span class="n">SequenceNode</span><span class="p">,</span> <span class="n">ExecutorConfig</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng_ros2</span><span class="w"> </span><span class="kn">import</span> <span class="n">RosActionNode</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng_ros2.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleBTExecutor</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">RobotBT</span><span class="p">(</span><span class="n">LifecycleBTExecutor</span><span class="p">):</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">build_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tree</span><span class="p">:</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="n">root</span> <span class="o">=</span> <span class="n">SequenceNode</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>            <span class="n">GoToWaypoint</span><span class="p">(</span><span class="s2">&quot;navigate&quot;</span><span class="p">),</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        <span class="p">])</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="k">return</span> <span class="n">Tree</span><span class="p">(</span><span class="n">TreeMetadata</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;robot&quot;</span><span class="p">),</span> <span class="n">root</span><span class="p">)</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">rclpy</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="n">node</span> <span class="o">=</span> <span class="n">RobotBT</span><span class="p">(</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>    <span class="n">config</span><span class="o">=</span><span class="n">ExecutorConfig</span><span class="p">(</span><span class="n">tick_interval</span><span class="o">=</span><span class="mf">0.05</span><span class="p">),</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    <span class="n">node_name</span><span class="o">=</span><span class="s2">&quot;bt_executor&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="p">)</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="n">rclpy</span><span class="o">.</span><span class="n">spin</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="n">node</span><span class="o">.</span><span class="n">destroy_node</span><span class="p">()</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="n">rclpy</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+</code></pre></div>
+<p>Control from the command line:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>ros2<span class="w"> </span>lifecycle<span class="w"> </span><span class="nb">set</span><span class="w"> </span>/bt_executor<span class="w"> </span>configure
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>ros2<span class="w"> </span>lifecycle<span class="w"> </span><span class="nb">set</span><span class="w"> </span>/bt_executor<span class="w"> </span>activate
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>ros2<span class="w"> </span>lifecycle<span class="w"> </span><span class="nb">set</span><span class="w"> </span>/bt_executor<span class="w"> </span>deactivate
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>ros2<span class="w"> </span>lifecycle<span class="w"> </span><span class="nb">set</span><span class="w"> </span>/bt_executor<span class="w"> </span>cleanup
+</code></pre></div>
+<h3 id="constructor_1">Constructor<a class="headerlink" href="#constructor_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">LifecycleBTExecutor</span><span class="p">(</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">config</span><span class="p">:</span> <span class="n">ExecutorConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">node_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bt_executor&quot;</span><span class="p">,</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">)</span>
+</code></pre></div>
+<h3 id="abstract-method">Abstract method<a class="headerlink" href="#abstract-method" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">build_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tree</span><span class="p">:</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="o">...</span>
+</code></pre></div>
+<p>Called during <code>configure</code>. Raise any exception here to abort configure and
+return <code>TransitionCallbackReturn.FAILURE</code>.</p>
+<h3 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>halt()</code></td>
+<td>Stop ticking and halt the tree without a lifecycle transition.</td>
+</tr>
+<tr>
+<td><code>final_status</code></td>
+<td>Property — status the tree settled at, or <code>None</code>. Cleared on every <code>activate</code>, since one node can run a tree again after deactivate → cleanup → configure → activate.</td>
+</tr>
+</tbody>
+</table>
+<p>There is deliberately <strong>no <code>run()</code></strong> here. Ticking is gated by external
+transitions: the node has no tree until <code>configure</code> and no timer until
+<code>activate</code>, so a <code>run()</code> would have to spin while unconfigured, waiting for
+<code>ros2 lifecycle set ... activate</code> from somewhere else — which is exactly what
+<code>rclpy.spin(node)</code> already does. A single "final status" would also be
+ill-defined across repeated activations.</p>
+<hr />
+<h2 id="choosing-between-them">Choosing between them<a class="headerlink" href="#choosing-between-them" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>RosBTExecutor</code></th>
+<th><code>LifecycleBTExecutor</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Base class</strong></td>
+<td><code>rclpy.Node</code></td>
+<td><code>rclpy.lifecycle.LifecycleNode</code></td>
+</tr>
+<tr>
+<td><strong>Tree build time</strong></td>
+<td>At construction</td>
+<td>On <code>configure</code></td>
+</tr>
+<tr>
+<td><strong>Restart without restart</strong></td>
+<td>No</td>
+<td>Yes — deactivate → cleanup → configure → activate</td>
+</tr>
+<tr>
+<td><strong>Integration with <code>nav2_bringup</code></strong></td>
+<td>Basic</td>
+<td>Full lifecycle managed</td>
+</tr>
+<tr>
+<td><strong>When to use</strong></td>
+<td>Scripts, CI, simple robots</td>
+<td>Production robots, managed bringup</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="tick-rate-and-executorconfig">Tick rate and ExecutorConfig<a class="headerlink" href="#tick-rate-and-executorconfig" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bteng</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExecutorConfig</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">ExecutorConfig</span><span class="p">(</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="n">tick_interval</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>   <span class="c1"># seconds — 0.05 = 20 Hz</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="p">)</span>
+</code></pre></div>
+<p>The tick interval is set once at construction. To change it at runtime, call
+<code>set_tree()</code> again (which recreates the timer) or cancel and recreate the node.</p>
+<h2 id="sim-time">Sim time<a class="headerlink" href="#sim-time" title="Permanent link">&para;</a></h2>
+<p>Both executors automatically replace the default <code>WallClock</code> in any <code>Timeout</code>
+or <code>RateController</code> node in the tree with <code>RosClock</code>, which delegates to
+<code>node.get_clock()</code>. This means <code>/use_sim_time=true</code> is respected without any
+manual wiring -- timeouts and rate limits follow simulation time in Gazebo or
+other simulators.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "search.highlight", "search.suggest", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
