@@ -14,7 +14,8 @@ behavior tree engine.
 |---|---|
 | Remote | `github.com/BTEng-dev/bteng-ros2` |
 | Branch | `main` (release branch; `gh-pages` holds the built docs) |
-| Version | `0.2.3` — single source of truth in `pyproject.toml` |
+| Version | `0.2.4` — single source of truth in `pyproject.toml` |
+| License | MIT (relicensed from Apache-2.0 in 0.2.4) |
 | Requires | Python >= 3.10, `bteng>=0.3.1` (older cores unsupported) |
 | Tests | 179, all passing on bteng 0.3.1 (2026-07-29) |
 
